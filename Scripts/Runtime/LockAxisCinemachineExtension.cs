@@ -1,21 +1,16 @@
 using Cinemachine;
 using UnityEngine;
+using UnityEngine.Animations;
 
 namespace niscolas.UnityUtils.Cinemachine
 {
+    [AddComponentMenu("")]
     [ExecuteInEditMode]
     [SaveDuringPlay]
-    [AddComponentMenu("")]
-    public class LockCinemachineAxis : CinemachineExtension
+    public class LockAxisCinemachineExtension : CinemachineExtension
     {
         [SerializeField]
-        private bool _lockX;
-
-        [SerializeField]
-        private bool _lockY;
-
-        [SerializeField]
-        private bool _lockZ;
+        private Axis _lockedAxes;
 
         private Vector3 _startPosition;
 
@@ -29,16 +24,16 @@ namespace niscolas.UnityUtils.Cinemachine
             CinemachineVirtualCameraBase vcam,
             CinemachineCore.Stage stage, ref CameraState state, float deltaTime)
         {
-            if (!enabled || stage != CinemachineCore.Stage.Body)
+            if (!enabled || _lockedAxes.HasFlag(Axis.None) || stage != CinemachineCore.Stage.Body)
             {
                 return;
             }
 
             Vector3 newPosition = state.RawPosition;
 
-            newPosition.x = _lockX ? _startPosition.x : newPosition.x;
-            newPosition.y = _lockY ? _startPosition.y : newPosition.y;
-            newPosition.z = _lockZ ? _startPosition.z : newPosition.z;
+            newPosition.x = _lockedAxes.HasFlag(Axis.X) ? _startPosition.x : newPosition.x;
+            newPosition.y = _lockedAxes.HasFlag(Axis.Y) ? _startPosition.y : newPosition.y;
+            newPosition.z = _lockedAxes.HasFlag(Axis.Z) ? _startPosition.z : newPosition.z;
 
             state.RawPosition = newPosition;
         }
